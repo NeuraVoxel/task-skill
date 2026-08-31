@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Canvas Rectangle</title>
+  <title>Canvas Shapes</title>
   <style>
     body {
       margin: 0;
@@ -27,6 +27,14 @@
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "#4a90d9";
     ctx.fillRect(80, 60, 240, 160);
+
+    ctx.beginPath();
+    ctx.moveTo(200, 40);
+    ctx.lineTo(320, 220);
+    ctx.lineTo(80, 220);
+    ctx.closePath();
+    ctx.fillStyle = "#e67e22";
+    ctx.fill();
   </script>
 </body>
 </html>
