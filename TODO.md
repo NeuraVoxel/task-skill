@@ -1,0 +1,17 @@
+# TODO
+
+Project task ledger for `/task-add` and `/task-do`.
+IDs: `T-NNN` (task) · `B-NNN` (bug). `[ ]` open · `[x]` done.
+Claim: `— @claimed {branch} {worktree}` or `— @claimed main`.
+Done: `— done {branch}` (branch kept; do not auto-merge `main`).
+Mode: `.todo-mode` → `parallel` (default) | `serial` via `/task-mode`.
+
+## Task
+
+- [ ] T-001 创建index.html 实现canvas绘制一个矩形. — @claimed task/T-001 ../notes-T-001
+- [ ] T-002 canvas 中绘制一个圆形
+- [ ] T-003 canvas 中绘制一个三角形
+
+## Bug
+
+- [ ] B-001 优化圆形的大小为2倍
