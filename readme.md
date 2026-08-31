@@ -67,7 +67,7 @@ Missing `.todo-mode` ⇒ `parallel`. Only **new** `/task-do` runs pick up a mode
 5. **Execute** → close out as `— done {branch}` (no auto-merge).
 
 **Simple:** implement directly.  
-**Complex:** brainstorming → Speckit (`specify` / `plan` / `implement`). Speckit reuses `GIT_BRANCH_NAME={branch}` so it does not create a second branch.
+**Complex:** brainstorming clarifies and approves a design doc → Speckit structures/implements from that design (not a second discovery pass). Speckit reuses `GIT_BRANCH_NAME={branch}`.
 
 ## `/task-unclaim`
 

@@ -106,18 +106,19 @@ On **continue**: skip create; reuse the existing worktree/branch from the claim 
 ### 9b. Complex path
 
 1. Follow the **brainstorming** skill until the user approves the design/requirements.
-2. Write design under `docs/superpowers/specs/` when brainstorming requires a design doc.
-3. After approval, in order:
-   - Read and follow `.cursor/skills/speckit-specify/SKILL.md`
-   - Read and follow `.cursor/skills/speckit-plan/SKILL.md`
-   - Read and follow `.cursor/skills/speckit-implement/SKILL.md`
+2. Write design under `docs/superpowers/specs/` when brainstorming requires a design doc. That approved design is the **requirements source of truth** for Speckit.
+3. After approval, run Speckit **as a structuring / execution pipeline**, not a second discovery pass:
+   - **Input:** pass the approved design (path + substance) into `speckit-specify` as the feature description. Prefer quoting or summarizing from the design doc over inventing new scope.
+   - **Do not** re-run brainstorming-style discovery, re-ask decisions already settled in the design, or draft a competing design narrative.
+   - **May** ask follow-ups only when the design is missing an implementation-critical detail, or contradicts itself / the codebase.
+   - Default: skip `speckit-clarify` / `speckit-tasks`. Use them only if blocked.
+   - Order: read and follow `speckit-specify` → `speckit-plan` → `speckit-implement`.
 4. **Reuse the task branch for Speckit** (no second branch):
    - Provision (§6) already created `{branch}` (`task/{ID}` or `bug/{ID}`). Stay on it for the whole Speckit pipeline.
    - When invoking `speckit-specify`, pass `GIT_BRANCH_NAME={branch}` so any `before_specify` git hook reuses that exact name instead of creating a Speckit-style branch (e.g. `003-short-name`).
    - Spec directory under `specs/` may still be auto-named independently; do not treat that directory name as a git branch to create or switch to.
    - Do **not** `git switch -c` / create another branch during Speckit unless the user explicitly asks.
-5. Default: skip clarify/tasks. Only add them if blocked.
-6. If brainstorming or Speckit skills are unavailable: tell the user, save what you have, leave primary ledger `- [ ]` with `— blocked: {reason}`, stop.
+5. If brainstorming or Speckit skills are unavailable: tell the user, save what you have, leave primary ledger `- [ ]` with `— blocked: {reason}`, stop.
 
 **Reminders while executing**
 
@@ -154,4 +155,5 @@ Briefly: ID, mode, difficulty, path taken (simple/complex), branch, result (done
 - Close-out **may** commit on the task branch and **may** update the ledger on primary/`main` when finishing.
 - Never push, open a PR, or auto-merge task branches into `main`.
 - Complex + Speckit: keep work on `{branch}`; pass `GIT_BRANCH_NAME={branch}` into `speckit-specify`; never create a second feature branch.
+- Complex handoff: Speckit consumes the approved brainstorming design; do not re-discover requirements or contradict settled decisions unless the design is incomplete or inconsistent.
 - Do not expand scope beyond the TODO entry without asking.
