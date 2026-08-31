@@ -46,7 +46,8 @@ Optional only if stuck: `speckit-clarify`, `speckit-tasks`, `speckit-analyze`, `
 - [ ] T-001 short title
 - [ ] T-002 short title — @claimed task/T-002 ../task-skill-T-002
 - [x] T-003 short title — done task/T-003
-- [ ] T-004 short title — blocked: waiting on API keys
+- [x] T-004 short title — merged task/T-004
+- [ ] T-005 short title — blocked: waiting on API keys
 
 ## Bug
 
@@ -60,6 +61,7 @@ Optional only if stuck: `speckit-clarify`, `speckit-tasks`, `speckit-analyze`, `
 | `— @claimed {branch} {worktree}` | parallel in progress |
 | `— @claimed main` | serial in progress |
 | `— done {branch}` | finished; branch kept, not auto-merged |
+| `— merged {branch}` | merged into `main` via `/task-merge` |
 | `— blocked: {reason}` | stopped; still open checkbox |
 
 Match entries by `{ID}` on the checkbox line. `[ ]` = open · `[x]` = done.
