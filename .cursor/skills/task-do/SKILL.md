@@ -58,7 +58,7 @@ Skip this entire section on **continue**.
 1. **cwd must be primary.** If cwd looks like a task worktree (`{project}-T-*` / `{project}-B-*`), stop and tell the user to run claim/redo from primary. (Continue-from-worktree is only for parallel — see §4.)
 2. **Project name:** `{project}` = basename of the primary repo root (e.g. primary `/…/task-skill` → `task-skill`). Use it for default worktree directory names.
 3. Branch name: `T-*` → `task/{ID}`; `B-*` → `bug/{ID}`.
-4. **Serial exclusivity (before any write):** when mode is `serial`, scan primary `TODO.md` for `@claimed` on **other** IDs (not the target `{ID}`). If any other ID is `@claimed`, **stop without mutating** `TODO.md`; ask to finish or `/task-release` first. Same-ID `@claimed` is not a blocker (allows **redo** overwrite).
+4. **Serial exclusivity (before any write):** when mode is `serial`, scan primary `TODO.md` for `@claimed` on **other** IDs (not the target `{ID}`). If any other ID is `@claimed`, **stop without mutating** `TODO.md`; ask to finish or `/task-unclaim` first. Same-ID `@claimed` is not a blocker (allows **redo** overwrite).
 5. **Double-read race check** — re-read the target line immediately before write:
    - **Fresh claim (not redo):** if another run already set `@claimed` or `[x]`, **stop without overwriting**.
    - **Redo:** race check does **not** block; you **may** overwrite existing `@claimed` or `[x]` and re-claim for this run.

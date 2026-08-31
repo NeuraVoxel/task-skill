@@ -9,7 +9,7 @@ Cursor Agent skills that turn repo-root `TODO.md` into a claim → work → done
 | `/task-add` | Append a task (`T-NNN`) or bug (`B-NNN`) to `TODO.md` |
 | `/task-mode` | Show or set `parallel` / `serial` (`.todo-mode`, gitignored) |
 | `/task-do` | Claim an item, provision branch/worktree, implement, mark `done` |
-| `/task-release` | Unclaim an in-progress item; optional worktree/branch cleanup |
+| `/task-unclaim` | Unclaim an in-progress item; optional worktree/branch cleanup |
 | `/task-merge` | Merge a `done` branch into `main`, mark `merged`; optional cleanup |
 
 ## Typical flow
@@ -20,10 +20,10 @@ Cursor Agent skills that turn repo-root `TODO.md` into a claim → work → done
 /task-merge T-001    →  merge to main → — merged task/T-001
 ```
 
-Drop or free a claim without finishing:
+Drop or unclaim without finishing:
 
 ```text
-/task-release T-001
+/task-unclaim T-001
 ```
 
 ## `/task-add`
@@ -69,11 +69,11 @@ Missing `.todo-mode` ⇒ `parallel`. Only **new** `/task-do` runs pick up a mode
 **Simple:** implement directly.  
 **Complex:** brainstorming → Speckit (`specify` / `plan` / `implement`). Speckit reuses `GIT_BRANCH_NAME={branch}` so it does not create a second branch.
 
-## `/task-release`
+## `/task-unclaim`
 
 ```text
-/task-release T-001
-/task-release T-001 --dwt --dbr   # also remove worktree / delete branch
+/task-unclaim T-001
+/task-unclaim T-001 --dwt --dbr   # also remove worktree / delete branch
 ```
 
 Rewrites the line to open `- [ ] {ID} {title}`. Does not merge. Branch kept unless you ask to delete.

@@ -9,7 +9,7 @@
 | `/task-add` | 向 `TODO.md` 追加任务（`T-NNN`）或缺陷（`B-NNN`） |
 | `/task-mode` | 查看或设置 `parallel` / `serial`（写入 `.todo-mode`，已 gitignore） |
 | `/task-do` | 认领条目、准备分支/worktree、实现，并标记为 `done` |
-| `/task-release` | 释放进行中的认领；可选清理 worktree / 分支 |
+| `/task-unclaim` | 取消进行中的认领；可选清理 worktree / 分支 |
 | `/task-merge` | 将 `done` 分支合并进 `main`，标记为 `merged`；可选清理 |
 
 ## 典型流程
@@ -20,10 +20,10 @@
 /task-merge T-001    →  合并到 main → — merged task/T-001
 ```
 
-不想做完、只想释放认领：
+不想做完、只想取消认领：
 
 ```text
-/task-release T-001
+/task-unclaim T-001
 ```
 
 ## `/task-add`
@@ -69,11 +69,11 @@
 **simple：** 直接改代码。  
 **complex：** brainstorming → Speckit（`specify` / `plan` / `implement`）。Speckit 通过 `GIT_BRANCH_NAME={branch}` 复用已有分支，避免再建第二条分支。
 
-## `/task-release`
+## `/task-unclaim`
 
 ```text
-/task-release T-001
-/task-release T-001 --dwt --dbr   # 同时删除 worktree / 分支
+/task-unclaim T-001
+/task-unclaim T-001 --dwt --dbr   # 同时删除 worktree / 分支
 ```
 
 把该行改回开放的 `- [ ] {ID} {title}`。不做合并。除非你明确要求，否则保留分支。
@@ -115,3 +115,14 @@
 - Skill 位于 `.cursor/skills/task-*/`。
 
 英文版见 [readme.md](readme.md)。
+
+## 优化
+更干净的改法（仍符合你的需求）
+  1. complex 只保留一条设计链
+    • 要结构化交付物 → 只用 Speckit；或
+    • 要轻量对话定稿 → 只用 brainstorming（+ 可选短 design doc），再直接实现。
+  2. 再加一档 medium（可选）：短设计确认 → 直接写，不上 Speckit。
+  3. 编排层保持：add / do / unclaim / merge / mode 不动。
+
+  一句话：你的设计不是「整体太冗余」，而是 complex 把两套规格流水线串成了强制套餐；外面没有现成 skill
+  刚好等于你的整套编排，该瘦的是设计阶段，不是账本本身。
