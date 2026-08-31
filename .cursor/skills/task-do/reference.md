@@ -19,11 +19,13 @@ Always propose a difficulty; the user may override.
 ## Complex pipeline (default)
 
 1. `brainstorming` → approved design/requirements (often `docs/superpowers/specs/YYYY-MM-DD-*-design.md`)
-2. `speckit-specify`
+2. `speckit-specify` with `GIT_BRANCH_NAME={branch}` (reuse `task/{ID}` or `bug/{ID}` from provision — do not let Speckit create a second branch)
 3. `speckit-plan`
 4. `speckit-implement`
 
 Optional only if stuck: `speckit-clarify`, `speckit-tasks`, `speckit-analyze`, `speckit-converge`.
+
+Speckit’s `specs/<prefix>-<short-name>/` directory name is independent of the git branch; only `{branch}` from `/task-do` is the work branch.
 
 ## Mode file
 

@@ -111,8 +111,13 @@ On **continue**: skip create; reuse the existing worktree/branch from the claim 
    - Read and follow `.cursor/skills/speckit-specify/SKILL.md`
    - Read and follow `.cursor/skills/speckit-plan/SKILL.md`
    - Read and follow `.cursor/skills/speckit-implement/SKILL.md`
-4. Default: skip clarify/tasks. Only add them if blocked.
-5. If brainstorming or Speckit skills are unavailable: tell the user, save what you have, leave primary ledger `- [ ]` with `— blocked: {reason}`, stop.
+4. **Reuse the task branch for Speckit** (no second branch):
+   - Provision (§6) already created `{branch}` (`task/{ID}` or `bug/{ID}`). Stay on it for the whole Speckit pipeline.
+   - When invoking `speckit-specify`, pass `GIT_BRANCH_NAME={branch}` so any `before_specify` git hook reuses that exact name instead of creating a Speckit-style branch (e.g. `003-short-name`).
+   - Spec directory under `specs/` may still be auto-named independently; do not treat that directory name as a git branch to create or switch to.
+   - Do **not** `git switch -c` / create another branch during Speckit unless the user explicitly asks.
+5. Default: skip clarify/tasks. Only add them if blocked.
+6. If brainstorming or Speckit skills are unavailable: tell the user, save what you have, leave primary ledger `- [ ]` with `— blocked: {reason}`, stop.
 
 **Reminders while executing**
 
@@ -148,4 +153,5 @@ Briefly: ID, mode, difficulty, path taken (simple/complex), branch, result (done
 - **Continue** must skip Claim and must not rewrite the `@claimed` line; ledger edits remain primary-only (close-out / blocked).
 - Close-out **may** commit on the task branch and **may** update the ledger on primary/`main` when finishing.
 - Never push, open a PR, or auto-merge task branches into `main`.
+- Complex + Speckit: keep work on `{branch}`; pass `GIT_BRANCH_NAME={branch}` into `speckit-specify`; never create a second feature branch.
 - Do not expand scope beyond the TODO entry without asking.
