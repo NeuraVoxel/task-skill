@@ -11,7 +11,7 @@ disable-model-invocation: true
 
 Append one entry to the project root `TODO.md`. Do not run `/task-do` or implement work.
 
-**Primary only:** Run in the primary vault checkout. Do not append to `TODO.md` inside a task worktree (`notes-T-*` / `notes-B-*`); if cwd looks like a task worktree, stop and tell the user to run `/task-add` on primary.
+**Primary only:** Run in the primary vault checkout. Do not append to `TODO.md` inside a task worktree (`{project}-T-*` / `{project}-B-*`, where `{project}` is the primary repo basename); if cwd looks like a task worktree, stop and tell the user to run `/task-add` on primary.
 
 ## Inputs
 

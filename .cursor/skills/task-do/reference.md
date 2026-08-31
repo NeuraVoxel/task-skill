@@ -34,7 +34,9 @@ Optional only if stuck: `speckit-clarify`, `speckit-tasks`, `speckit-analyze`, `
 
 ## Worktree path
 
-Default sibling of primary: `../notes-{ID}` (e.g. `../notes-T-001`).
+- `{project}` = basename of the primary repo root (e.g. `task-skill`).
+- Default sibling of primary: `../{project}-{ID}` (e.g. `../task-skill-T-001`).
+- Task worktree detection: directory name matches `{project}-T-*` or `{project}-B-*`.
 
 ## TODO.md entry shapes
 
@@ -42,7 +44,7 @@ Default sibling of primary: `../notes-{ID}` (e.g. `../notes-T-001`).
 ## Task
 
 - [ ] T-001 short title
-- [ ] T-002 short title — @claimed task/T-002 ../notes-T-002
+- [ ] T-002 short title — @claimed task/T-002 ../task-skill-T-002
 - [x] T-003 short title — done task/T-003
 - [ ] T-004 short title — blocked: waiting on API keys
 
@@ -67,12 +69,12 @@ Branch: `T-*` → `task/{ID}` · `B-*` → `bug/{ID}`.
 ## Git cheat sheet
 
 ```bash
-# parallel provision (from primary, on main)
-git worktree add "../notes-T-001" -b task/T-001
+# parallel provision (from primary, on main); {project} = basename of primary
+git worktree add "../task-skill-T-001" -b task/T-001
 
 # list / remove
 git worktree list
-git worktree remove "../notes-T-001"
+git worktree remove "../task-skill-T-001"
 
 # serial
 git switch -c task/T-001

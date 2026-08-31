@@ -8,7 +8,7 @@ Mode: `.todo-mode` → `parallel` (default) | `serial` via `/task-mode`.
 
 ## Task
 
-- [ ] T-001 创建index.html 实现canvas绘制一个矩形. — @claimed task/T-001 ../notes-T-001
+- [ ] T-001 创建index.html 实现canvas绘制一个矩形. — @claimed task/T-001 ../task-skill-T-001
 - [ ] T-002 canvas 中绘制一个圆形
 - [ ] T-003 canvas 中绘制一个三角形
 
