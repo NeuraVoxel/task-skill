@@ -21,7 +21,7 @@
   </style>
 </head>
 <body>
-  <canvas id="c" width="400" height="300"></canvas>
+  <canvas id="c" width="400" height="400"></canvas>
   <script>
     const canvas = document.getElementById("c");
     const ctx = canvas.getContext("2d");
@@ -35,7 +35,9 @@
     ctx.closePath();
     ctx.fillStyle = "#e67e22";
     ctx.fill();
-    ctx.arc(200, 150, 100, 0, Math.PI * 2);
+
+    ctx.beginPath();
+    ctx.arc(200, 200, 200, 0, Math.PI * 2);
     ctx.fillStyle = "#9b59b6";
     ctx.fill();
     ctx.strokeStyle = "#8e44ad";
