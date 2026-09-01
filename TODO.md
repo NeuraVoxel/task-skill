@@ -11,7 +11,7 @@ Mode: `.todo-mode` → `parallel` (default) | `serial` via `/task-mode`.
 
 - [x] T-001 创建index.html 实现canvas绘制一个矩形. — done task/T-001
 - [x] T-002 canvas 中绘制一个圆形 — merged task/T-002
-- [x] T-003 canvas 中绘制一个三角形 — done task/T-003
+- [x] T-003 canvas 中绘制一个三角形 — merged task/T-003
 
 ## Bug
 
