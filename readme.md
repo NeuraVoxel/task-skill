@@ -63,10 +63,11 @@ Missing `.todo-mode` ⇒ `parallel`. Only **new** `/task-do` runs pick up a mode
 1. **Claim** on primary `TODO.md` (`@claimed …`).
 2. **Provision** branch (and worktree in parallel).
 3. **Handoff (parallel):** open Agent in the worktree and re-run `/task-do {ID}` → **continue** (no re-claim).
-4. **Difficulty gate:** confirm `simple` or `complex` before coding.
+4. **Difficulty gate:** confirm `simple`, `medium`, or `complex` before coding.
 5. **Execute** → close out as `— done {branch}` (no auto-merge).
 
 **Simple:** implement directly.  
+**Medium:** brainstorming clarifies and approves a design → implement directly (no Speckit).  
 **Complex:** brainstorming clarifies and approves a design doc → Speckit structures/implements from that design (not a second discovery pass). Speckit reuses `GIT_BRANCH_NAME={branch}`.
 
 ## `/task-unclaim`

@@ -63,10 +63,11 @@
 1. 在 primary 的 `TODO.md` 上 **认领**（`@claimed …`）。
 2. **准备**分支（parallel 时再建 worktree）。
 3. **交接（parallel）：** 在 worktree 里打开 Agent，再跑一次 `/task-do {ID}` → **continue**（不再认领）。
-4. **难度确认：** 编码前确认 `simple` 或 `complex`。
+4. **难度确认：** 编码前确认 `simple`、`medium` 或 `complex`。
 5. **执行** → 收尾为 `— done {branch}`（不会自动合并进 `main`）。
 
 **simple：** 直接改代码。  
+**medium：** brainstorming 澄清并批准 design → 直接实现（不走 Speckit）。  
 **complex：** brainstorming 澄清并批准 design → Speckit 以该 design 为输入做结构化与实现（不再重新发现需求）。Speckit 通过 `GIT_BRANCH_NAME={branch}` 复用已有分支。
 
 ## `/task-unclaim`

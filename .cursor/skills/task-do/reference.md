@@ -8,15 +8,35 @@
 - Clear acceptance criteria already in the TODO line / notes
 - No new product behavior or architecture decision
 
+**Prefer medium when:**
+
+- Bounded change that still needs intent/design clarification before coding
+- Multi-file or small feature, but success criteria become clear after a short design
+- Needs brainstorming approval, but **not** Speckit artifacts / full structuring pipeline
+
 **Prefer complex when:**
 
-- New feature or multi-file / cross-area change
-- Requirements or success criteria unclear
-- Needs a design doc or Speckit artifacts before coding
+- New feature or multi-file / cross-area change with unclear or contested requirements
+- Needs a durable design doc **and** Speckit artifacts before coding
+- Architecture, contracts, or multi-step planning benefit from specify → plan → implement
 
 Always propose a difficulty; the user may override.
 
-## Complex pipeline (default)
+## Execution paths (summary)
+
+| Difficulty | After confirmation |
+|------------|--------------------|
+| **simple** | Implement directly — no brainstorming, no Speckit |
+| **medium** | Brainstorming → approved design → implement directly — no Speckit |
+| **complex** | Brainstorming → approved design → Speckit specify → plan → implement |
+
+## Medium pipeline
+
+1. `brainstorming` → approved design/requirements (in chat and/or `docs/superpowers/specs/YYYY-MM-DD-*-design.md`) — **source of truth**
+2. Implement directly on `{branch}` (`task/{ID}` or `bug/{ID}`)
+3. Do **not** run Speckit
+
+## Complex pipeline
 
 1. `brainstorming` → approved design/requirements (often `docs/superpowers/specs/YYYY-MM-DD-*-design.md`) — **source of truth**
 2. `speckit-specify` with that design as input + `GIT_BRANCH_NAME={branch}` (structure the approved requirements; do not re-discover or re-decide; reuse `task/{ID}` or `bug/{ID}`)

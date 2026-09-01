@@ -2,10 +2,10 @@
 name: task-do
 description: >-
   Claims a TODO.md item by id (T-NNN or B-NNN), provisions a worktree (parallel)
-  or task branch (serial) from .todo-mode, runs simple/complex execution, then
-  closes out with a done/blocked ledger line on primary — no auto-merge to main.
-  Use when the user runs /task-do, asks to work a task number, or process an
-  item from TODO.md.
+  or task branch (serial) from .todo-mode, runs simple/medium/complex execution,
+  then closes out with a done/blocked ledger line on primary — no auto-merge to
+  main. Use when the user runs /task-do, asks to work a task number, or process
+  an item from TODO.md.
 disable-model-invocation: true
 ---
 
@@ -92,7 +92,7 @@ On **continue**: skip create; reuse the existing worktree/branch from the claim 
 
 ## 8. Difficulty gate (hard stop)
 
-1. Suggest `simple` or `complex` with 2–4 sentences of rationale (see reference).
+1. Suggest `simple`, `medium`, or `complex` with 2–4 sentences of rationale (see reference).
 2. **Wait for user confirmation or override.** Do not implement before this.
 3. After confirmation, remember difficulty for the close-out reply (not a separate ledger field).
 
@@ -103,7 +103,15 @@ On **continue**: skip create; reuse the existing worktree/branch from the claim 
 1. Implement the request directly (edit files / notes as needed).
 2. Do **not** invoke brainstorming or Speckit.
 
-### 9b. Complex path
+### 9b. Medium path
+
+1. Follow the **brainstorming** skill until the user approves the design/requirements.
+2. Write design under `docs/superpowers/specs/` when brainstorming requires a design doc. That approved design (or the in-chat approved design) is the **requirements source of truth** for implementation.
+3. After approval, **implement directly** on the task branch (edit files / notes as needed).
+4. Do **not** invoke Speckit (`speckit-specify` / `plan` / `implement` or related).
+5. If brainstorming is unavailable: tell the user, save what you have, leave primary ledger `- [ ]` with `— blocked: {reason}`, stop.
+
+### 9c. Complex path
 
 1. Follow the **brainstorming** skill until the user approves the design/requirements.
 2. Write design under `docs/superpowers/specs/` when brainstorming requires a design doc. That approved design is the **requirements source of truth** for Speckit.
@@ -146,7 +154,7 @@ On **continue**: skip create; reuse the existing worktree/branch from the claim 
 
 ### Reply
 
-Briefly: ID, mode, difficulty, path taken (simple/complex), branch, result (done / blocked / handoff).
+Briefly: ID, mode, difficulty, path taken (simple/medium/complex), branch, result (done / blocked / handoff).
 
 ## 11. Gates
 
@@ -154,6 +162,7 @@ Briefly: ID, mode, difficulty, path taken (simple/complex), branch, result (done
 - **Continue** must skip Claim and must not rewrite the `@claimed` line; ledger edits remain primary-only (close-out / blocked).
 - Close-out **may** commit on the task branch and **may** update the ledger on primary/`main` when finishing.
 - Never push, open a PR, or auto-merge task branches into `main`.
+- Medium: brainstorming then direct implement; never Speckit.
 - Complex + Speckit: keep work on `{branch}`; pass `GIT_BRANCH_NAME={branch}` into `speckit-specify`; never create a second feature branch.
 - Complex handoff: Speckit consumes the approved brainstorming design; do not re-discover requirements or contradict settled decisions unless the design is incomplete or inconsistent.
 - Do not expand scope beyond the TODO entry without asking.
