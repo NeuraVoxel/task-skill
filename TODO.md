@@ -4,7 +4,7 @@ Project task ledger for `/task-add`, `/task-remove`, and `/task-do`.
 IDs: `T-NNN` (task) · `B-NNN` (bug). `[ ]` open · `[x]` done.
 Claim: `— @claimed {branch} {worktree}` or `— @claimed main`.
 Done: `— done {branch}` on worktree/task-branch `TODO.md` (primary may still show `@claimed` until merge).
-Merged: `— merged {branch}` via `/task-merge` (optional `--dbr` / `-dwt`).
+Merged: `— merged {branch}` via `/task-merge` (optional `--dbr` / `-dwt` / `--stash`).
 Mode: `.todo-mode` → `parallel` (default) | `serial` via `/task-mode`.
 Worktree (parallel): default `.worktrees/{ID}` (gitignored); override `/task-do {ID} --wt <path>`.
 
@@ -13,9 +13,10 @@ Worktree (parallel): default `.worktrees/{ID}` (gitignored); override `/task-do 
 - [x] T-001 创建index.html 实现canvas绘制一个矩形. — done task/T-001
 - [x] T-002 canvas 中绘制一个圆形 — merged task/T-002
 - [x] T-003 canvas 中绘制一个三角形 — merged task/T-003
+- [ ] T-004 新增绘制三个不同颜色的圆球. — @claimed task/T-004 .worktrees/T-004
 
 ## Bug
 
 - [x] B-001 优化圆形的大小为2倍 — merged bug/B-001
 - [x] B-002 优化圆形大小为1/4 — merged bug/B-002
-- [x] B-003 优化Canvas画布盛满全屏 — done bug/B-003
+- [x] B-003 优化Canvas画布盛满全屏 — merged bug/B-003
