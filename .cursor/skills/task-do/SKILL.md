@@ -3,9 +3,10 @@ name: task-do
 description: >-
   Claims a TODO.md item by id (T-NNN or B-NNN), provisions a worktree (parallel)
   or task branch (serial) from .todo-mode, runs simple/medium/complex execution,
-  then closes out with a done/blocked ledger line on primary — no auto-merge to
-  main. Use when the user runs /task-do, asks to work a task number, or process
-  an item from TODO.md.
+  then closes out with a done/blocked ledger line on the task worktree/branch —
+  never edit primary/main TODO.md at close-out. No auto-merge to main. Use when
+  the user runs /task-do, asks to work a task number, or process an item from
+  TODO.md.
 disable-model-invocation: true
 ---
 
@@ -19,7 +20,14 @@ Orchestrate one ledger item: **claim → provision → execute → close out** (
 - `docs/superpowers/specs/2026-08-31-parallel-todo-worktree-design.md`
 - Heuristics and git cheat sheet: [reference.md](reference.md)
 
-**Primary only for claim/ledger:** Edit `TODO.md` only on the primary vault checkout. Task worktrees must not treat their copy of `TODO.md` as ledger truth. From a worktree cwd, edit primary via its absolute path (not the worktree copy).
+**Ledger write split**
+
+| Phase | Where to edit `TODO.md` |
+|-------|-------------------------|
+| **Claim** (§5) | **Primary only** (so other runs see `@claimed`) |
+| **Close-out / blocked** (§10, medium/complex blocked) | **Task worktree / task branch only** — never primary/`main` |
+
+In parallel, the executing agent (continue in the worktree) must write done/blocked on the **worktree** `TODO.md` and commit it on `{branch}`. Do **not** open or patch primary's `TODO.md` after claim. Serial marks done/blocked on the task branch **before** any `git switch main`.
 
 ## 2. Inputs
 
@@ -37,19 +45,20 @@ Orchestrate one ledger item: **claim → provision → execute → close out** (
 1. On primary, read `TODO.md`. Find the checkbox line matching `{ID}` under `## Task` or `## Bug`:
    `- [ ] {ID} …` or `- [x] {ID} …`
 2. If not found: report and stop.
-3. Classify this run (mutually exclusive). Parse claimed worktree path from the line when present (`— @claimed {branch} {path}`). Serial claims use `— @claimed main` (no worktree path).
+3. **Parallel status peek (worktree):** if a claimed worktree path is present and that path exists, also read **that worktree's** `TODO.md` for `{ID}`. Prefer the worktree line for **done / blocked** decisions (primary may still show `@claimed` after close-out).
+4. Classify this run (mutually exclusive). Parse claimed worktree path from the primary line when present (`— @claimed {branch} {path}`). Serial claims use `— @claimed main` (no worktree path).
 
 | Outcome | When | Next |
 |---------|------|------|
-| **stop** | `- [x]` and user did **not** ask to **redo** | Report done; stop |
-| **stop** | **Parallel** claim (`@claimed` with worktree path) for this `{ID}`, user did **not** ask to **redo**, and cwd is **not** that claimed worktree | Report claimed; stop |
+| **stop** | Worktree (or primary) line is `- [x] … — done` / `— merged`, and user did **not** ask to **redo** | Report done; stop |
+| **stop** | **Parallel** claim (`@claimed` with worktree path) for this `{ID}`, user did **not** ask to **redo**, cwd is **not** that claimed worktree, and worktree (if readable) is **not** already done | Report claimed; stop |
 | **stop** | **Serial** claim (`@claimed main`) for this `{ID}`, user did **not** ask to **redo**, and cwd is **not** primary | Report claimed; stop |
-| **continue** | **Parallel:** line `@claimed` for this `{ID}` with worktree path, user did **not** ask to **redo**, and cwd **is** that claimed worktree | **Skip §5 Claim and §6 provision-create.** Do not rewrite the claim line. Reuse existing worktree/branch → §7 → difficulty+ |
-| **continue** | **Serial:** line `@claimed main` for this `{ID}`, user did **not** ask to **redo**, and cwd **is** primary | **Skip §5 Claim and §6 provision-create.** Do not rewrite the claim line. Stay on primary (serial has no worktree handoff) → §7 → difficulty+ |
+| **continue** | **Parallel:** primary `@claimed` for this `{ID}` with worktree path, user did **not** ask to **redo**, cwd **is** that claimed worktree, and worktree line is **not** already `- [x]` done | **Skip §5 Claim and §6 provision-create.** Do not rewrite the claim line on primary. Reuse existing worktree/branch → §7 → difficulty+ |
+| **continue** | **Serial:** primary `@claimed main` for this `{ID}`, user did **not** ask to **redo**, and cwd **is** primary | **Skip §5 Claim and §6 provision-create.** Do not rewrite the claim line. Stay on primary (serial has no worktree handoff) → §7 → difficulty+ |
 | **redo** | User explicitly asked to **redo** (even if `[x]` or `@claimed`) | §5 Claim (overwrite allowed) → §6 → … |
-| **fresh claim** | Open `- [ ]` with no `@claimed` | §5 Claim → §6 → … |
+| **fresh claim** | Open `- [ ]` with no `@claimed` (and no worktree done peek) | §5 Claim → §6 → … |
 
-**Continue invariants:** Claiming and other ledger edits still happen only on primary. A continue run must **not** re-write the TODO claim line and must **not** run Claim (§5). Parallel continue may start from the task worktree; serial continue only from primary.
+**Continue invariants:** Claim stays primary-only. A continue run must **not** re-write the primary `@claimed` line and must **not** run Claim (§5). Parallel continue may start from the task worktree; serial continue only from primary. Close-out / blocked edits go to the **execution checkout** (worktree or task branch), never primary/`main`.
 
 ## 5. Claim (primary only)
 
@@ -109,7 +118,7 @@ On **continue**: skip create; reuse the existing worktree/branch from the claim 
 2. Write design under `docs/superpowers/specs/` when brainstorming requires a design doc. That approved design (or the in-chat approved design) is the **requirements source of truth** for implementation.
 3. After approval, **implement directly** on the task branch (edit files / notes as needed).
 4. Do **not** invoke Speckit (`speckit-specify` / `plan` / `implement` or related).
-5. If brainstorming is unavailable: tell the user, save what you have, leave primary ledger `- [ ]` with `— blocked: {reason}`, stop.
+5. If brainstorming is unavailable: tell the user, save what you have, leave execution-checkout ledger `- [ ]` with `— blocked: {reason}` (see §10 Blocked), stop.
 
 ### 9c. Complex path
 
@@ -126,41 +135,45 @@ On **continue**: skip create; reuse the existing worktree/branch from the claim 
    - When invoking `speckit-specify`, pass `GIT_BRANCH_NAME={branch}` so any `before_specify` git hook reuses that exact name instead of creating a Speckit-style branch (e.g. `003-short-name`).
    - Spec directory under `specs/` may still be auto-named independently; do not treat that directory name as a git branch to create or switch to.
    - Do **not** `git switch -c` / create another branch during Speckit unless the user explicitly asks.
-5. If brainstorming or Speckit skills are unavailable: tell the user, save what you have, leave primary ledger `- [ ]` with `— blocked: {reason}`, stop.
+5. If brainstorming or Speckit skills are unavailable: tell the user, save what you have, leave execution-checkout ledger `- [ ]` with `— blocked: {reason}` (see §10 Blocked), stop.
 
 **Reminders while executing**
 
-- Do **not** edit the worktree copy of `TODO.md`; ledger updates go on primary at close-out / blocked (use primary's absolute path if cwd is a worktree).
+- **Parallel:** edit the **worktree** `TODO.md` only at close-out / blocked. Never edit primary/`main` `TODO.md` from the worktree agent.
+- **Serial:** edit `TODO.md` on the **task branch** at close-out / blocked; do not edit after switching to `main`.
 - Do not commit `.obsidian/` or other local noise; follow `.gitignore`.
 
 ## 10. Close out
 
 ### Parallel (success)
 
-1. In the task worktree: if there are content changes, commit on the task branch (message like `task({ID}): …` or `bug({ID}): …`). No push, no merge.
-2. On **primary**, set: `- [x] {ID} {title} — done {branch}`
-3. Keep the worktree (do not remove).
+1. In the task worktree: set local `TODO.md` to `- [x] {ID} {title} — done {branch}`.
+2. Commit content changes **and** that `TODO.md` update on `{branch}` (message like `task({ID}): …` or `bug({ID}): …`). No push, no merge.
+3. Do **not** edit primary/`main` `TODO.md` (it may still show `@claimed` until `/task-merge`).
+4. Keep the worktree (do not remove).
 
 ### Serial (success)
 
-1. Commit content on the task branch if there are changes.
-2. `git switch main`
-3. On primary `TODO.md`, set: `- [x] {ID} {title} — done {branch}`
+1. On the task branch: set `TODO.md` to `- [x] {ID} {title} — done {branch}`.
+2. Commit content changes **and** that `TODO.md` update on `{branch}`.
+3. `git switch main`
+4. Do **not** edit `TODO.md` on `main` after the switch (primary claim line may still show `@claimed` until `/task-merge`).
 
 ### Blocked (either mode)
 
-1. Keep `- [ ]` on **primary** ledger; set/replace trailing notes to `— blocked: {reason}`.
-2. Do not mark done; do not merge.
+1. On the **execution checkout** (parallel: worktree; serial: task branch): keep `- [ ]`; set/replace trailing notes to `— blocked: {reason}`.
+2. Commit that ledger update on `{branch}` when practical.
+3. Do **not** edit primary/`main` `TODO.md`. Do not mark done; do not merge.
 
 ### Reply
 
-Briefly: ID, mode, difficulty, path taken (simple/medium/complex), branch, result (done / blocked / handoff).
+Briefly: ID, mode, difficulty, path taken (simple/medium/complex), branch, result (done / blocked / handoff). Note that primary may still show `@claimed` until merge.
 
 ## 11. Gates
 
 - Stop on missing id, missing entry, claim race (**fresh claim** only — not **redo**), serial exclusivity (other IDs’ `@claimed` before write; same-ID allowed for **redo**), claim/redo from a worktree cwd, wrong cwd (parallel execute), dirty serial switch, unconfirmed difficulty, or user rejecting scope.
-- **Continue** must skip Claim and must not rewrite the `@claimed` line; ledger edits remain primary-only (close-out / blocked).
-- Close-out **may** commit on the task branch and **may** update the ledger on primary/`main` when finishing.
+- **Continue** must skip Claim and must not rewrite the primary `@claimed` line.
+- Close-out **may** commit on the task branch (including worktree/`TODO.md` done/blocked). Close-out must **not** patch primary/`main` `TODO.md`.
 - Never push, open a PR, or auto-merge task branches into `main`.
 - Medium: brainstorming then direct implement; never Speckit.
 - Complex + Speckit: keep work on `{branch}`; pass `GIT_BRANCH_NAME={branch}` into `speckit-specify`; never create a second feature branch.

@@ -1,9 +1,9 @@
  TODO
 
-Project task ledger for `/task-add` and `/task-do`.
+Project task ledger for `/task-add`, `/task-remove`, and `/task-do`.
 IDs: `T-NNN` (task) · `B-NNN` (bug). `[ ]` open · `[x]` done.
 Claim: `— @claimed {branch} {worktree}` or `— @claimed main`.
-Done: `— done {branch}` (branch kept; do not auto-merge `main`).
+Done: `— done {branch}` on worktree/task-branch `TODO.md` (primary may still show `@claimed` until merge).
 Merged: `— merged {branch}` via `/task-merge` (optional `--dbr` / `-dwt`).
 Mode: `.todo-mode` → `parallel` (default) | `serial` via `/task-mode`.
 
@@ -16,3 +16,4 @@ Mode: `.todo-mode` → `parallel` (default) | `serial` via `/task-mode`.
 ## Bug
 
 - [x] B-001 优化圆形的大小为2倍 — merged bug/B-001
+- [ ] B-002 优化圆形大小为1/4

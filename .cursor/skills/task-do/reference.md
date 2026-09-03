@@ -80,13 +80,15 @@ Division of labor: brainstorming clarifies intent; Speckit structures and implem
 | Tail | Meaning |
 |------|---------|
 | (none) | open, unclaimed |
-| `— @claimed {branch} {worktree}` | parallel in progress |
-| `— @claimed main` | serial in progress |
-| `— done {branch}` | finished; branch kept, not auto-merged |
+| `— @claimed {branch} {worktree}` | parallel in progress (primary claim) |
+| `— @claimed main` | serial in progress (primary claim) |
+| `— done {branch}` | finished on **task branch/worktree** `TODO.md`; primary may still show `@claimed` until `/task-merge` |
 | `— merged {branch}` | merged into `main` via `/task-merge` |
-| `— blocked: {reason}` | stopped; still open checkbox |
+| `— blocked: {reason}` | stopped on execution checkout; still open checkbox |
 
 Match entries by `{ID}` on the checkbox line. `[ ]` = open · `[x]` = done.
+
+**Where lines are written:** claim → primary; done/blocked → worktree (parallel) or task branch (serial); merged → primary after `/task-merge`.
 
 Branch: `T-*` → `task/{ID}` · `B-*` → `bug/{ID}`.
 

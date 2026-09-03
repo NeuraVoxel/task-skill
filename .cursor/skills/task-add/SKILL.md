@@ -30,10 +30,10 @@ From the user message (ask only for what is missing):
 ```markdown
 # TODO
 
-Project task ledger for `/task-add` and `/task-do`.
+Project task ledger for `/task-add`, `/task-remove`, and `/task-do`.
 IDs: `T-NNN` (task) · `B-NNN` (bug). `[ ]` open · `[x]` done.
 Claim: `— @claimed {branch} {worktree}` or `— @claimed main`.
-Done: `— done {branch}` (branch kept; do not auto-merge `main`).
+Done: `— done {branch}` on worktree/task-branch `TODO.md` (primary may still show `@claimed` until merge).
 Merged: `— merged {branch}` via `/task-merge` (optional `--dbr` / `-dwt`).
 Mode: `.todo-mode` → `parallel` (default) | `serial` via `/task-mode`.
 

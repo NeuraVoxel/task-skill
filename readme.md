@@ -1,12 +1,13 @@
 # task-skill
 
-Cursor Agent skills that turn repo-root `TODO.md` into a claim → work → done → merge workflow. Ledger edits happen on the **primary** checkout only; parallel work uses git worktrees.
+Cursor Agent skills that turn repo-root `TODO.md` into a claim → work → done → merge workflow. **Claim** is written on primary; **done/blocked** is written on the task worktree/branch (not primary/`main`); **merged** is finalized on primary by `/task-merge`. Parallel work uses git worktrees.
 
 ## Skills
 
 | Command | Role |
 |---------|------|
 | `/task-add` | Append a task (`T-NNN`) or bug (`B-NNN`) to `TODO.md` |
+| `/task-remove` | Delete a ledger line by id; optional worktree/branch cleanup |
 | `/task-mode` | Show or set `parallel` / `serial` (`.todo-mode`, gitignored) |
 | `/task-do` | Claim an item, provision branch/worktree, implement, mark `done` |
 | `/task-unclaim` | Unclaim an in-progress item; optional worktree/branch cleanup |
@@ -23,7 +24,9 @@ Cursor Agent skills that turn repo-root `TODO.md` into a claim → work → done
 Drop or unclaim without finishing:
 
 ```text
-/task-unclaim T-001
+/task-unclaim T-001      # keep the open TODO line
+/task-remove T-001       # delete the ledger line
+/task-remove T-001 --dwt --dbr
 ```
 
 ## `/task-add`
@@ -37,6 +40,19 @@ Drop or unclaim without finishing:
 - Default type is `task` → `T-NNN`. Use `bug:` / type `bug` → `B-NNN`.
 - Does **not** start work; only appends to `TODO.md`.
 - Run on **primary**, not inside a task worktree.
+
+## `/task-remove`
+
+```text
+/task-remove T-001
+/task-remove B-002 --dwt --dbr
+```
+
+- Deletes the `{ID}` checkbox line from primary `TODO.md` (any state: open / claimed / done / merged).
+- Does **not** renumber other IDs.
+- If a worktree/branch exists: asks before cleanup unless `--dwt` / `--dbr`.
+- Prefer `/task-unclaim` when you only want to clear `@claimed` but keep the open line.
+- Run on **primary**.
 
 ## `/task-mode`
 
@@ -64,7 +80,7 @@ Missing `.todo-mode` ⇒ `parallel`. Only **new** `/task-do` runs pick up a mode
 2. **Provision** branch (and worktree in parallel).
 3. **Handoff (parallel):** open Agent in the worktree and re-run `/task-do {ID}` → **continue** (no re-claim).
 4. **Difficulty gate:** confirm `simple`, `medium`, or `complex` before coding.
-5. **Execute** → close out as `— done {branch}` (no auto-merge).
+5. **Execute** → close out as `— done {branch}` on the **worktree/task-branch** `TODO.md` (commit with the work; do not edit primary/`main` ledger).
 
 **Simple:** implement directly.  
 **Medium:** brainstorming clarifies and approves a design → implement directly (no Speckit).  
@@ -86,8 +102,9 @@ Rewrites the line to open `- [ ] {ID} {title}`. Does not merge. Branch kept unle
 /task-merge T-001 --dbr -dwt     # after clean merge: delete branch + worktree
 ```
 
-- Only accepts `- [x] … — done {branch}`.
-- On conflict: stops; resolve, commit (or abort), then re-run.
+- Accepts `- [x] … — done {branch}` on primary **or** on the worktree/task branch (primary may still show `@claimed`).
+- `TODO.md`-only conflicts: prefer the branch done line, then set `— merged`.
+- Other conflicts: stop; resolve, commit (or abort), then re-run.
 - Without flags: asks before deleting branch / worktree.
 
 ## `TODO.md` tails
@@ -97,9 +114,9 @@ Rewrites the line to open `- [ ] {ID} {title}`. Does not merge. Branch kept unle
 | (none) | open |
 | `— @claimed {branch} {worktree}` | parallel in progress |
 | `— @claimed main` | serial in progress |
-| `— done {branch}` | finished; not yet on `main` |
+| `— done {branch}` | finished on task branch/worktree; primary may still be `@claimed` |
 | `— merged {branch}` | merged via `/task-merge` |
-| `— blocked: {reason}` | stopped; still open |
+| `— blocked: {reason}` | stopped on execution checkout; still open |
 
 Branch names: `T-*` → `task/{ID}`, `B-*` → `bug/{ID}`.  
 Worktree default: `../{project}-{ID}` (sibling of primary).
@@ -110,7 +127,7 @@ Parallel shines when tasks touch **different** files. Same hotspot file (e.g. on
 
 ## Rules of thumb
 
-- Ledger truth = primary `TODO.md` only.
+- Claim on primary; done/blocked on worktree/task branch; merged on primary after `/task-merge`.
 - Never auto-merge into `main`; use `/task-merge`.
 - Do not push / open PRs unless you ask separately.
 - Skills live under `.cursor/skills/task-*/`.

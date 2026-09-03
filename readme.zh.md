@@ -1,12 +1,13 @@
 # task-skill
 
-一组 Cursor Agent Skill：把仓库根目录的 `TODO.md` 变成「认领 → 开发 → 完成 → 合并」工作流。账本只在 **primary（主工作区）** 上改；并行开发用 git worktree。
+一组 Cursor Agent Skill：把仓库根目录的 `TODO.md` 变成「认领 → 开发 → 完成 → 合并」工作流。**认领**写在 primary；**done/blocked**写在任务 worktree/分支（不改 primary/`main`）；**merged**由 `/task-merge` 在 primary 收尾。并行开发用 git worktree。
 
 ## Skills
 
 | 命令 | 作用 |
 |------|------|
 | `/task-add` | 向 `TODO.md` 追加任务（`T-NNN`）或缺陷（`B-NNN`） |
+| `/task-remove` | 按 id 删除账本行；可选清理 worktree / 分支 |
 | `/task-mode` | 查看或设置 `parallel` / `serial`（写入 `.todo-mode`，已 gitignore） |
 | `/task-do` | 认领条目、准备分支/worktree、实现，并标记为 `done` |
 | `/task-unclaim` | 取消进行中的认领；可选清理 worktree / 分支 |
@@ -20,10 +21,12 @@
 /task-merge T-001    →  合并到 main → — merged task/T-001
 ```
 
-不想做完、只想取消认领：
+不想做完、只想取消认领或删掉条目：
 
 ```text
-/task-unclaim T-001
+/task-unclaim T-001      # 保留开放 TODO 行
+/task-remove T-001       # 从账本删除该行
+/task-remove T-001 --dwt --dbr
 ```
 
 ## `/task-add`
@@ -37,6 +40,19 @@
 - 默认类型为 `task` → `T-NNN`。写 `bug:` 或指定类型 `bug` → `B-NNN`。
 - **不会**开始实现，只往 `TODO.md` 追加。
 - 在 **primary** 上执行，不要在任务 worktree 里跑。
+
+## `/task-remove`
+
+```text
+/task-remove T-001
+/task-remove B-002 --dwt --dbr
+```
+
+- 从 primary `TODO.md` 删除该 `{ID}` 行（开放 / 已认领 / done / merged 均可）。
+- **不会**重排其他 ID。
+- 若仍有 worktree/分支：未带 `--dwt` / `--dbr` 时会先询问是否清理。
+- 若只想清掉 `@claimed` 但保留开放行，用 `/task-unclaim`。
+- 在 **primary** 上执行。
 
 ## `/task-mode`
 
@@ -64,7 +80,7 @@
 2. **准备**分支（parallel 时再建 worktree）。
 3. **交接（parallel）：** 在 worktree 里打开 Agent，再跑一次 `/task-do {ID}` → **continue**（不再认领）。
 4. **难度确认：** 编码前确认 `simple`、`medium` 或 `complex`。
-5. **执行** → 收尾为 `— done {branch}`（不会自动合并进 `main`）。
+5. **执行** → 在 **worktree/任务分支** 的 `TODO.md` 上收尾为 `— done {branch}`（随任务提交；不改 primary/`main` 账本）。
 
 **simple：** 直接改代码。  
 **medium：** brainstorming 澄清并批准 design → 直接实现（不走 Speckit）。  
@@ -86,8 +102,9 @@
 /task-merge T-001 --dbr -dwt     # 干净合并后：删分支 + 删 worktree
 ```
 
-- 只接受 `- [x] … — done {branch}`。
-- 发生冲突时立刻停下；解决后 `commit`（或 `merge --abort`），再重新执行。
+- 接受 primary **或** worktree/任务分支上的 `- [x] … — done {branch}`（primary 仍可能是 `@claimed`）。
+- 仅 `TODO.md` 冲突：优先采用分支上的 done 行，再写成 `— merged`。
+- 其他冲突：立刻停下；解决后 `commit`（或 `merge --abort`），再重新执行。
 - 未带参数时：删除分支 / worktree 前会先询问。
 
 ## `TODO.md` 尾注
@@ -97,9 +114,9 @@
 | （无） | 开放、未认领 |
 | `— @claimed {branch} {worktree}` | parallel 进行中 |
 | `— @claimed main` | serial 进行中 |
-| `— done {branch}` | 已完成，尚未进 `main` |
+| `— done {branch}` | 已在任务分支/worktree 完成；primary 可能仍为 `@claimed` |
 | `— merged {branch}` | 已通过 `/task-merge` 合并 |
-| `— blocked: {reason}` | 受阻；复选框仍为开放 |
+| `— blocked: {reason}` | 执行侧受阻；复选框仍为开放 |
 
 分支命名：`T-*` → `task/{ID}`，`B-*` → `bug/{ID}`。  
 默认 worktree：`../{project}-{ID}`（与 primary 同级）。
@@ -110,7 +127,7 @@
 
 ## 使用约定
 
-- 账本唯一真相源 = primary 上的 `TODO.md`。
+- 认领写 primary；done/blocked 写 worktree/任务分支；merged 由 `/task-merge` 在 primary 收尾。
 - 不要自动合并进 `main`；用 `/task-merge`。
 - 除非另行要求，否则不 push、不开 PR。
 - Skill 位于 `.cursor/skills/task-*/`。

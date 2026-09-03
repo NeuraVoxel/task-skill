@@ -12,6 +12,8 @@ disable-model-invocation: true
 
 Merge a **done** ledger item into `main` from the **primary** checkout. Optional cleanup of branch / worktree.
 
+Done status may live on the **task branch / worktree** `TODO.md` (written by `/task-do` close-out) while primary still shows `@claimed`. Prefer branch/worktree for the done check; after merge, rewrite primary to `— merged`.
+
 ## Inputs
 
 | Field | Required | Notes |
@@ -27,10 +29,15 @@ If id missing: ask once, then stop.
 1. **cwd / edits:** Run on **primary** only. If cwd looks like a task worktree (`{project}-T-*` / `{project}-B-*`, `{project}` = primary basename), stop and tell the user to run `/task-merge` on primary.
 2. On primary, read `TODO.md`. Find the checkbox line matching `{ID}`.
 3. If not found: report and stop.
-4. **Must be done, not yet merged:**
-   - Accept: `- [x] {ID} {title} — done {branch}`
-   - Reject (report and stop): open / `@claimed` / `blocked` / already `— merged …` / `[x]` without `— done {branch}`
-5. Resolve `{branch}` from the `— done` tail (prefer the written branch; fallback `T-*` → `task/{ID}`, `B-*` → `bug/{ID}`).
+4. **Resolve done status** (must be done, not yet merged):
+   - Reject immediately if primary (or branch) already shows `— merged {branch}`.
+   - **Accept** if any of these show `- [x] {ID} … — done {branch}`:
+     1. Primary `TODO.md` line, or
+     2. Claimed worktree path's `TODO.md` (from primary `@claimed {branch} {path}`), or
+     3. `git show {branch}:TODO.md` for the resolved `{branch}`
+   - If primary still has `@claimed` / open but worktree or `{branch}` has `— done`, that is **valid** (normal after `/task-do` close-out).
+   - Reject (report and stop): no done line anywhere; only `@claimed` / open / `blocked` with no done on branch/worktree; `[x]` without `— done {branch}`.
+5. Resolve `{branch}` from the `— done` tail when present; else from `@claimed {branch} …`; else fallback `T-*` → `task/{ID}`, `B-*` → `bug/{ID}`.
 6. Primary working tree on `main` must be clean enough to merge (no conflicting dirty state). If dirty in a way that blocks merge: stop and ask the user to clean up. Do **not** stash.
 
 ## Steps
@@ -40,22 +47,24 @@ If id missing: ask once, then stop.
 1. `git switch main`
 2. `git merge {branch}` (default merge; allow fast-forward or merge commit).
 3. **On conflict:**
-   - Stop immediately.
-   - List conflicted paths.
-   - Leave the in-progress merge as git left it.
-   - Do **not** update `TODO.md`, do **not** delete branch/worktree, do **not** push.
-   - Tell the user to resolve, `git add`, `git commit` (or `git merge --abort`), then re-run `/task-merge {ID}` if still `— done` (or finish manually and set `— merged` themselves).
+   - If **only** `TODO.md` conflicts (or `TODO.md` plus easily resolvable noise): resolve `{ID}`'s line to `- [x] {ID} {title} — done {branch}` (prefer the task-branch / "theirs" done form over primary `@claimed`), `git add TODO.md`, continue the merge (`git commit` if merge stopped for conflicts). Then proceed to §2.
+   - Otherwise:
+     - Stop immediately.
+     - List conflicted paths.
+     - Leave the in-progress merge as git left it.
+     - Do **not** finalize ledger as `merged`, do **not** delete branch/worktree, do **not** push.
+     - Tell the user to resolve, `git add`, `git commit` (or `git merge --abort`), then re-run `/task-merge {ID}` if still `— done` (or finish manually and set `— merged` themselves).
 4. **On success:** continue.
 
-### 2. Ledger (primary only)
+### 2. Ledger (primary after merge)
 
-Rewrite the line to:
+Rewrite the line on primary `TODO.md` to:
 
 ```markdown
 - [x] {ID} {title} — merged {branch}
 ```
 
-Keep the original title; strip `done` / other tails. Do not edit a worktree copy of `TODO.md`.
+Keep the original title; strip `done` / `@claimed` / other tails. After a successful merge the done line usually arrived from `{branch}`; this step only finalizes `merged` on primary.
 
 ### 3. Cleanup prompts
 
@@ -89,5 +98,5 @@ Briefly: ID, branch, merge result (merged / conflict-paused), ledger (`merged`),
 - Never push, open a PR, or merge anything that is not this `{ID}`'s done branch.
 - Never auto-merge without this skill being invoked.
 - Do not uncheck `[x]` or reopen the item.
-- Do not delete branch/worktree on conflict.
-- `--dbr` / `-dwt` only skip **cleanup** questions after a **successful** merge — they never force through conflicts.
+- Do not delete branch/worktree on unresolved non-TODO conflicts.
+- `--dbr` / `-dwt` only skip **cleanup** questions after a **successful** merge — they never force through non-TODO conflicts.
