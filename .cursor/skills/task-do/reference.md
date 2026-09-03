@@ -59,7 +59,7 @@ Division of labor: brainstorming clarifies intent; Speckit structures and implem
 - `{project}` = basename of the primary repo root (e.g. `task-skill`).
 - **Default:** `{primary}/.worktrees/{ID}` (e.g. `.worktrees/T-001`). Aligns with Superpowers `using-git-worktrees` (project-local `.worktrees/`).
 - **Override:** `/task-do {ID} --wt <path>` — absolute, or relative to primary. Write the resolved path into the claim line.
-- **Ignore:** `.worktrees/` must be gitignored (`git check-ignore -q .worktrees`). If not, add it to `.gitignore` before `git worktree add`.
+- **Ignore:** `.worktrees/` must be gitignored (`git check-ignore -q .worktrees/`). If not, add it to `.gitignore` before `git worktree add`.
 - **Legacy compat:** older claims may use sibling `../{project}-{ID}`; discovery still accepts those paths.
 - **Task worktree detection** (cwd “looks like” a task worktree): claim path match, **or** cwd under `{primary}/.worktrees/`, **or** basename matches `{project}-T-*` / `{project}-B-*` (legacy sibling).
 
@@ -108,7 +108,7 @@ Branch: `T-*` → `task/{ID}` · `B-*` → `bug/{ID}`.
 ```bash
 # parallel provision (from primary, on main)
 mkdir -p .worktrees
-git check-ignore -q .worktrees || echo '.worktrees/' >> .gitignore
+git check-ignore -q .worktrees/ || echo '.worktrees/' >> .gitignore
 git worktree add .worktrees/T-001 -b task/T-001
 
 # override

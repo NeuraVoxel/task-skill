@@ -92,7 +92,7 @@ On **continue**: skip create; reuse the existing worktree/branch from the claim 
 ### Parallel
 
 1. **Fresh claim / redo only:** From primary (on `main`):
-   - If the path is under primary `.worktrees/` (default): `mkdir -p .worktrees`. Ensure `.worktrees` is ignored (`git check-ignore -q .worktrees`); if not, append `.worktrees/` to `.gitignore` before adding the worktree.
+   - If the path is under primary `.worktrees/` (default): `mkdir -p .worktrees`. Ensure `.worktrees/` is ignored (`git check-ignore -q .worktrees/`); if not, append `.worktrees/` to `.gitignore` before adding the worktree.
    - Run: `git worktree add {worktree-path} -b {branch}` (or without `-b` if reusing an existing branch on redo).
 2. If the worktree or branch already exists: reuse; ensure claim line path matches (update claim path on primary only if this run performed Claim).
 3. **Handoff stop:** if cwd is still primary after provision, tell the user to open Agent in the worktree (or `cd` there) and re-run `/task-do {ID}`. That re-run is **continue** (§4) — it must not re-claim. Stop here.
