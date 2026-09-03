@@ -101,12 +101,15 @@ Rewrites the line to open `- [ ] {ID} {title}`. Does not merge. Branch kept unle
 ```text
 /task-merge T-001
 /task-merge T-001 --dbr -dwt     # after clean merge: delete branch + worktree
+/task-merge T-001 --stash        # stash non-TODO.md dirty files, pop after
 ```
 
 - Accepts `- [x] … — done {branch}` on primary **or** on the worktree/task branch (primary may still show `@claimed`).
-- `TODO.md`-only conflicts: prefer the branch done line, then set `— merged`.
+- Dirty primary **`TODO.md` only** (typical parallel `@claimed` lines): auto-reconcile via backup — preserve other claims; do not ask to discard.
+- Dirty **non-`TODO.md`**: stop unless `--stash` (stash those paths, pop after ledger finalize). Never stash `TODO.md`.
+- `TODO.md`-only conflicts: prefer the branch done line for `{ID}`, keep other primary claim rows, then set `— merged` and commit ledger.
 - Other conflicts: stop; resolve, commit (or abort), then re-run.
-- Without flags: asks before deleting branch / worktree.
+- Without `--dbr` / `-dwt`: asks before deleting branch / worktree.
 
 ## `TODO.md` tails
 

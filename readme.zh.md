@@ -101,12 +101,15 @@
 ```text
 /task-merge T-001
 /task-merge T-001 --dbr -dwt     # 干净合并后：删分支 + 删 worktree
+/task-merge T-001 --stash        # 暂存非 TODO.md 脏文件，结束后 stash pop
 ```
 
 - 接受 primary **或** worktree/任务分支上的 `- [x] … — done {branch}`（primary 仍可能是 `@claimed`）。
-- 仅 `TODO.md` 冲突：优先采用分支上的 done 行，再写成 `— merged`。
+- primary 仅 **`TODO.md` 脏**（常见：并行 `@claimed`）：自动 reconcile（备份 → 合并 → 保留其它认领行），不要求用户丢掉未提交 ledger。
+- **非 `TODO.md` 脏改**：默认停止；加 `--stash` 才暂存那些路径并在收尾后 `stash pop`。绝不 stash `TODO.md`。
+- 仅 `TODO.md` 冲突：`{ID}` 优先用分支 done 行，保留其它 primary claim，再写成 `— merged` 并提交 ledger。
 - 其他冲突：立刻停下；解决后 `commit`（或 `merge --abort`），再重新执行。
-- 未带参数时：删除分支 / worktree 前会先询问。
+- 未带 `--dbr` / `-dwt` 时：删除分支 / worktree 前会先询问。
 
 ## `TODO.md` 尾注
 

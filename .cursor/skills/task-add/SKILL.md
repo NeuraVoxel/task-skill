@@ -34,7 +34,7 @@ Project task ledger for `/task-add`, `/task-remove`, and `/task-do`.
 IDs: `T-NNN` (task) · `B-NNN` (bug). `[ ]` open · `[x]` done.
 Claim: `— @claimed {branch} {worktree}` or `— @claimed main`.
 Done: `— done {branch}` on worktree/task-branch `TODO.md` (primary may still show `@claimed` until merge).
-Merged: `— merged {branch}` via `/task-merge` (optional `--dbr` / `-dwt`).
+Merged: `— merged {branch}` via `/task-merge` (optional `--dbr` / `-dwt` / `--stash`).
 Mode: `.todo-mode` → `parallel` (default) | `serial` via `/task-mode`.
 Worktree (parallel): default `.worktrees/{ID}` (gitignored); override `/task-do {ID} --wt <path>`.
 
