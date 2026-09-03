@@ -26,7 +26,7 @@ If id missing: ask once, then stop.
 
 ## Preconditions
 
-1. **cwd / edits:** Run on **primary** only. If cwd looks like a task worktree (`{project}-T-*` / `{project}-B-*`, `{project}` = primary basename), stop and tell the user to run `/task-merge` on primary.
+1. **cwd / edits:** Run on **primary** only. If cwd looks like a task worktree (under `{primary}/.worktrees/`, or basename `{project}-T-*` / `{project}-B-*`, or a claimed task path — see `task-do/reference.md`), stop and tell the user to run `/task-merge` on primary.
 2. On primary, read `TODO.md`. Find the checkbox line matching `{ID}`.
 3. If not found: report and stop.
 4. **Resolve done status** (must be done, not yet merged):
@@ -71,8 +71,10 @@ Keep the original title; strip `done` / `@claimed` / other tails. After a succes
 Discover worktree (if any):
 
 1. Prefer a path from `git worktree list` whose branch is `{branch}`.
-2. Else, if `../{project}-{ID}` (absolute sibling of primary) exists in `git worktree list`, use that.
-3. Else: no worktree.
+2. Else claimed `{path}` from primary `@claimed …` if listed.
+3. Else `.worktrees/{ID}` if listed.
+4. Else legacy sibling `../{project}-{ID}` if listed.
+5. Else: no worktree.
 
 **Branch delete (`--dbr`):**
 

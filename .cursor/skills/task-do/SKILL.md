@@ -31,9 +31,13 @@ In parallel, the executing agent (continue in the worktree) must write done/bloc
 
 ## 2. Inputs
 
-- Required: task id (`T-001`, `B-002`, …) from `/task-do <ID>` or the message.
-- Optional: explicit **redo** (re-claim / re-run a done or already-claimed item).
-- If id missing: ask once, then stop until provided.
+| Field | Required | Notes |
+|-------|----------|-------|
+| id | yes | `T-001`, `B-002`, … from `/task-do <ID> …` |
+| `redo` | no | Re-claim / re-run a done or already-claimed item |
+| `--wt <path>` | no | Parallel only: worktree directory (absolute or relative to primary). Default: `.worktrees/{ID}` |
+
+If id missing: ask once, then stop until provided.
 
 ## 3. Resolve mode
 
@@ -64,18 +68,22 @@ In parallel, the executing agent (continue in the worktree) must write done/bloc
 
 Skip this entire section on **continue**.
 
-1. **cwd must be primary.** If cwd looks like a task worktree (`{project}-T-*` / `{project}-B-*`), stop and tell the user to run claim/redo from primary. (Continue-from-worktree is only for parallel — see §4.)
-2. **Project name:** `{project}` = basename of the primary repo root (e.g. primary `/…/task-skill` → `task-skill`). Use it for default worktree directory names.
+1. **cwd must be primary.** If cwd looks like a task worktree (under `{primary}/.worktrees/`, or basename `{project}-T-*` / `{project}-B-*`, or equals a claimed task path — see [reference.md](reference.md)), stop and tell the user to run claim/redo from primary. (Continue-from-worktree is only for parallel — see §4.)
+2. **Project name:** `{project}` = basename of the primary repo root (e.g. primary `/…/task-skill` → `task-skill`). Used for legacy sibling-path detection only.
 3. Branch name: `T-*` → `task/{ID}`; `B-*` → `bug/{ID}`.
-4. **Serial exclusivity (before any write):** when mode is `serial`, scan primary `TODO.md` for `@claimed` on **other** IDs (not the target `{ID}`). If any other ID is `@claimed`, **stop without mutating** `TODO.md`; ask to finish or `/task-unclaim` first. Same-ID `@claimed` is not a blocker (allows **redo** overwrite).
-5. **Double-read race check** — re-read the target line immediately before write:
+4. **Resolve worktree path (parallel only):**
+   - If `--wt <path>` given: use it (absolute as-is; relative → resolve from primary).
+   - Else default: `.worktrees/{ID}` (relative to primary).
+   - Write this exact path string into the claim line (prefer primary-relative when under primary).
+5. **Serial exclusivity (before any write):** when mode is `serial`, scan primary `TODO.md` for `@claimed` on **other** IDs (not the target `{ID}`). If any other ID is `@claimed`, **stop without mutating** `TODO.md`; ask to finish or `/task-unclaim` first. Same-ID `@claimed` is not a blocker (allows **redo** overwrite).
+6. **Double-read race check** — re-read the target line immediately before write:
    - **Fresh claim (not redo):** if another run already set `@claimed` or `[x]`, **stop without overwriting**.
    - **Redo:** race check does **not** block; you **may** overwrite existing `@claimed` or `[x]` and re-claim for this run.
-6. Set the claim tail on primary `TODO.md` (keep `- [ ]` and title; clear prior `done` / `blocked` / old claim tails):
-   - **parallel:** `— @claimed {branch} ../{project}-{ID}`  
-     Default worktree path: `../{project}-{ID}` (relative to primary, or the absolute equivalent; write the path you will use).
+7. Set the claim tail on primary `TODO.md` (keep `- [ ]` and title; clear prior `done` / `blocked` / old claim tails):
+   - **parallel:** `— @claimed {branch} {worktree-path}`  
+     Example default: `— @claimed task/T-001 .worktrees/T-001`
    - **serial:** `— @claimed main`
-7. Write primary `TODO.md`.
+8. Write primary `TODO.md`.
 
 ## 6. Provision
 
@@ -83,8 +91,9 @@ On **continue**: skip create; reuse the existing worktree/branch from the claim 
 
 ### Parallel
 
-1. **Fresh claim / redo only:** From primary (on `main`), run:
-   `git worktree add ../{project}-{ID} -b {branch}`
+1. **Fresh claim / redo only:** From primary (on `main`):
+   - If the path is under primary `.worktrees/` (default): `mkdir -p .worktrees`. Ensure `.worktrees` is ignored (`git check-ignore -q .worktrees`); if not, append `.worktrees/` to `.gitignore` before adding the worktree.
+   - Run: `git worktree add {worktree-path} -b {branch}` (or without `-b` if reusing an existing branch on redo).
 2. If the worktree or branch already exists: reuse; ensure claim line path matches (update claim path on primary only if this run performed Claim).
 3. **Handoff stop:** if cwd is still primary after provision, tell the user to open Agent in the worktree (or `cd` there) and re-run `/task-do {ID}`. That re-run is **continue** (§4) — it must not re-claim. Stop here.
 4. If cwd is already the task worktree: continue to §7.

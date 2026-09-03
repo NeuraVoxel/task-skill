@@ -6,6 +6,7 @@ Claim: `— @claimed {branch} {worktree}` or `— @claimed main`.
 Done: `— done {branch}` on worktree/task-branch `TODO.md` (primary may still show `@claimed` until merge).
 Merged: `— merged {branch}` via `/task-merge` (optional `--dbr` / `-dwt`).
 Mode: `.todo-mode` → `parallel` (default) | `serial` via `/task-mode`.
+Worktree (parallel): default `.worktrees/{ID}` (gitignored); override `/task-do {ID} --wt <path>`.
 
 ## Task
 
@@ -16,4 +17,4 @@ Mode: `.todo-mode` → `parallel` (default) | `serial` via `/task-mode`.
 ## Bug
 
 - [x] B-001 优化圆形的大小为2倍 — merged bug/B-001
-- [ ] B-002 优化圆形大小为1/4
+- [ ] B-002 优化圆形大小为1/4 — @claimed bug/B-002 ../task-skill-B-002

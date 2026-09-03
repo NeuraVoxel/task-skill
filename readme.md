@@ -64,7 +64,7 @@ Drop or unclaim without finishing:
 
 | Mode | Provision |
 |------|-----------|
-| `parallel` | `git worktree add ../{project}-{ID} -b task/{ID}` (or `bug/{ID}`) |
+| `parallel` | `git worktree add .worktrees/{ID} -b task/{ID}` (or `bug/{ID}`) |
 | `serial` | `git switch -c task/{ID}` on primary; claim tail is `@claimed main` |
 
 Missing `.todo-mode` ⇒ `parallel`. Only **new** `/task-do` runs pick up a mode change.
@@ -73,11 +73,12 @@ Missing `.todo-mode` ⇒ `parallel`. Only **new** `/task-do` runs pick up a mode
 
 ```text
 /task-do T-001
-/task-do T-001 redo    # re-claim / re-run even if done or claimed
+/task-do T-001 redo              # re-claim / re-run even if done or claimed
+/task-do T-001 --wt /tmp/my-T-001   # custom worktree path (parallel)
 ```
 
 1. **Claim** on primary `TODO.md` (`@claimed …`).
-2. **Provision** branch (and worktree in parallel).
+2. **Provision** branch (and worktree in parallel under `.worktrees/{ID}` unless `--wt`).
 3. **Handoff (parallel):** open Agent in the worktree and re-run `/task-do {ID}` → **continue** (no re-claim).
 4. **Difficulty gate:** confirm `simple`, `medium`, or `complex` before coding.
 5. **Execute** → close out as `— done {branch}` on the **worktree/task-branch** `TODO.md` (commit with the work; do not edit primary/`main` ledger).
@@ -119,7 +120,7 @@ Rewrites the line to open `- [ ] {ID} {title}`. Does not merge. Branch kept unle
 | `— blocked: {reason}` | stopped on execution checkout; still open |
 
 Branch names: `T-*` → `task/{ID}`, `B-*` → `bug/{ID}`.  
-Worktree default: `../{project}-{ID}` (sibling of primary).
+Worktree default: `.worktrees/{ID}` (gitignored; override with `--wt`). Legacy sibling `../{project}-{ID}` still discoverable.
 
 ## Parallel vs merge conflicts
 

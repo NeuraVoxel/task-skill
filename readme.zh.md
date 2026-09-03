@@ -64,7 +64,7 @@
 
 | 模式 | 准备方式 |
 |------|----------|
-| `parallel` | `git worktree add ../{project}-{ID} -b task/{ID}`（缺陷为 `bug/{ID}`） |
+| `parallel` | `git worktree add .worktrees/{ID} -b task/{ID}`（缺陷为 `bug/{ID}`） |
 | `serial` | 在 primary 上 `git switch -c task/{ID}`；认领尾注为 `@claimed main` |
 
 没有 `.todo-mode` 时视为 `parallel`。模式变更只影响**之后新的** `/task-do`。
@@ -73,11 +73,12 @@
 
 ```text
 /task-do T-001
-/task-do T-001 redo    # 即使已 done / 已认领，也重新认领并执行
+/task-do T-001 redo                 # 即使已 done / 已认领，也重新认领并执行
+/task-do T-001 --wt /tmp/my-T-001   # 自定义 worktree 路径（parallel）
 ```
 
 1. 在 primary 的 `TODO.md` 上 **认领**（`@claimed …`）。
-2. **准备**分支（parallel 时再建 worktree）。
+2. **准备**分支（parallel 时默认建在 `.worktrees/{ID}`，可用 `--wt` 覆盖）。
 3. **交接（parallel）：** 在 worktree 里打开 Agent，再跑一次 `/task-do {ID}` → **continue**（不再认领）。
 4. **难度确认：** 编码前确认 `simple`、`medium` 或 `complex`。
 5. **执行** → 在 **worktree/任务分支** 的 `TODO.md` 上收尾为 `— done {branch}`（随任务提交；不改 primary/`main` 账本）。
@@ -119,7 +120,7 @@
 | `— blocked: {reason}` | 执行侧受阻；复选框仍为开放 |
 
 分支命名：`T-*` → `task/{ID}`，`B-*` → `bug/{ID}`。  
-默认 worktree：`../{project}-{ID}`（与 primary 同级）。
+默认 worktree：`.worktrees/{ID}`（已 gitignore；可用 `--wt` 覆盖）。旧版同级 `../{project}-{ID}` 仍可被发现。
 
 ## 并行与合并冲突
 

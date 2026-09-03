@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 Remove one ledger entry from **primary** `TODO.md`. Does not implement work, merge, or push.
 
-**Primary only:** If cwd looks like a task worktree (`{project}-T-*` / `{project}-B-*`, `{project}` = primary basename), stop and tell the user to run `/task-remove` on primary.
+**Primary only:** If cwd looks like a task worktree (under `{primary}/.worktrees/`, or basename `{project}-T-*` / `{project}-B-*`, or a claimed task path — see `task-do/reference.md`), stop and tell the user to run `/task-remove` on primary.
 
 ## Inputs
 
@@ -33,7 +33,7 @@ If id missing: ask once, then stop.
    - `— done {branch}` / `— merged {branch}`
    - Fallback branch: `T-*` → `task/{ID}`, `B-*` → `bug/{ID}`
 4. **Worktree cleanup** (before deleting the line):
-   - Discover path: claimed `{path}`, else `git worktree list` entry on `{branch}`, else sibling `../{project}-{ID}` if listed.
+   - Discover path (first match): claimed `{path}` if listed → `git worktree list` entry on `{branch}` → `.worktrees/{ID}` if listed → legacy sibling `../{project}-{ID}` if listed.
    - If a worktree exists:
      - `--dwt` present → `git worktree remove <path>` (`--force` only if user explicitly allows discarding worktree changes).
      - `--dwt` absent → **ask** whether to remove it; wait; remove only on yes.

@@ -20,7 +20,7 @@ Persist execution mode for `/task-do` in the **primary** checkout only.
 
 ## Steps
 
-1. Resolve primary repo root (directory that contains `TODO.md` and `.git` or is the main worktree). Prefer the vault path the user considers primary, not a `{project}-T-*` / `{project}-B-*` task worktree (`{project}` = primary basename).
+1. Resolve primary repo root (directory that contains `TODO.md` and `.git` or is the main worktree). Prefer primary, not a task worktree (under `{primary}/.worktrees/`, or basename `{project}-T-*` / `{project}-B-*`, or a claimed task path — see `task-do/reference.md`).
 2. Read `.todo-mode` if present; otherwise treat current as `parallel`.
 3. If user only asked to show mode: reply with current value and stop.
 4. If setting `serial`: scan primary `TODO.md` for any line containing `@claimed` and a worktree path (not `main`). If found, **warn** to finish or `/task-unclaim` those IDs first; still allow the write if user explicitly confirms in the same turn, otherwise stop after the warning.

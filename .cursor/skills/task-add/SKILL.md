@@ -11,7 +11,7 @@ disable-model-invocation: true
 
 Append one entry to the project root `TODO.md`. Do not run `/task-do` or implement work.
 
-**Primary only:** Run in the primary vault checkout. Do not append to `TODO.md` inside a task worktree (`{project}-T-*` / `{project}-B-*`, where `{project}` is the primary repo basename); if cwd looks like a task worktree, stop and tell the user to run `/task-add` on primary.
+**Primary only:** Run in the primary vault checkout. Do not append to `TODO.md` inside a task worktree (under `{primary}/.worktrees/`, or basename `{project}-T-*` / `{project}-B-*`, or a claimed task path — see `task-do/reference.md`); if cwd looks like a task worktree, stop and tell the user to run `/task-add` on primary.
 
 ## Inputs
 
@@ -36,6 +36,7 @@ Claim: `— @claimed {branch} {worktree}` or `— @claimed main`.
 Done: `— done {branch}` on worktree/task-branch `TODO.md` (primary may still show `@claimed` until merge).
 Merged: `— merged {branch}` via `/task-merge` (optional `--dbr` / `-dwt`).
 Mode: `.todo-mode` → `parallel` (default) | `serial` via `/task-mode`.
+Worktree (parallel): default `.worktrees/{ID}` (gitignored); override `/task-do {ID} --wt <path>`.
 
 ## Task
 
