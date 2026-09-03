@@ -17,4 +17,4 @@ Worktree (parallel): default `.worktrees/{ID}` (gitignored); override `/task-do 
 ## Bug
 
 - [x] B-001 优化圆形的大小为2倍 — merged bug/B-001
-- [ ] B-002 优化圆形大小为1/4 — @claimed bug/B-002 .worktrees/B-002
+- [x] B-002 优化圆形大小为1/4 — done bug/B-002
