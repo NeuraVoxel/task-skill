@@ -43,6 +43,22 @@
     ctx.strokeStyle = "#8e44ad";
     ctx.lineWidth = 3;
     ctx.stroke();
+
+    // Three differently colored balls
+    const balls = [
+      { x: 80, y: 320, r: 36, fill: "#e74c3c", stroke: "#c0392b" },
+      { x: 200, y: 340, r: 36, fill: "#2ecc71", stroke: "#27ae60" },
+      { x: 320, y: 320, r: 36, fill: "#3498db", stroke: "#2980b9" },
+    ];
+    for (const b of balls) {
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.fillStyle = b.fill;
+      ctx.fill();
+      ctx.strokeStyle = b.stroke;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
   </script>
 </body>
 </html>
