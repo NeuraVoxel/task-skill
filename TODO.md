@@ -18,3 +18,4 @@ Worktree (parallel): default `.worktrees/{ID}` (gitignored); override `/task-do 
 
 - [x] B-001 优化圆形的大小为2倍 — merged bug/B-001
 - [x] B-002 优化圆形大小为1/4 — merged bug/B-002
+- [x] B-003 优化Canvas画布盛满全屏 — done bug/B-003
