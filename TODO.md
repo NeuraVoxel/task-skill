@@ -16,4 +16,4 @@ Mode: `.todo-mode` → `parallel` (default) | `serial` via `/task-mode`.
 ## Bug
 
 - [x] B-001 优化圆形的大小为2倍 — merged bug/B-001
-- [ ] B-002 优化圆形大小为1/4
+- [x] B-002 优化圆形大小为1/4 — done bug/B-002
